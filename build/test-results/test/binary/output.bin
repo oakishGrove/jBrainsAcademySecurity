@@ -1,0 +1,52 @@
+[1;31m
+Start test 1[0m
+
+(  .   ____          _            __ _ _
+) /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+*( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
++ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+*  '  |____| .__|_| |_|_| |_\__, | / / / /
+) =========|_|==============|___/=/_/_/_/
++ :: Spring Boot ::        (v2.3.1.RELEASE)
+
+÷2022-01-14 14:28:23.280  INFO 21632 --- [    Test worker] account.AccountServiceApplication        : Starting AccountServiceApplication on oak-inspiron5537 with PID 21632 (started by oak in /home/oak/projects/Account Service/Account Service/task)
+¦2022-01-14 14:28:23.285  INFO 21632 --- [    Test worker] account.AccountServiceApplication        : No active profile set, falling back to default profiles: default
+“2022-01-14 14:28:25.591  INFO 21632 --- [    Test worker] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port(s): 28852 (http)
+2022-01-14 14:28:25.611  INFO 21632 --- [    Test worker] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+•2022-01-14 14:28:25.612  INFO 21632 --- [    Test worker] org.apache.catalina.core.StandardEngine  : Starting Servlet engine: [Apache Tomcat/9.0.36]
+˜2022-01-14 14:28:25.752  INFO 21632 --- [    Test worker] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+¥2022-01-14 14:28:25.753  INFO 21632 --- [    Test worker] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 2391 ms
+œ2022-01-14 14:28:26.321  INFO 21632 --- [    Test worker] o.s.s.concurrent.ThreadPoolTaskExecutor  : Initializing ExecutorService 'applicationTaskExecutor'
+›2022-01-14 14:28:26.772  INFO 21632 --- [    Test worker] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 14 endpoint(s) beneath base path '/actuator'
+¢2022-01-14 14:28:26.871  INFO 21632 --- [    Test worker] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port(s): 28852 (http) with context path ''
+°2022-01-14 14:28:26.900  INFO 21632 --- [    Test worker] account.AccountServiceApplication        : Started AccountServiceApplication in 4.394 seconds (JVM running for 5.643)
+Ÿ2022-01-14 14:28:27.578  INFO 21632 --- [io-28852-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+Ž2022-01-14 14:28:27.580  INFO 21632 --- [io-28852-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+‡2022-01-14 14:28:27.596  INFO 21632 --- [io-28852-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 15 ms
+[1;31m
+Start test 2[0m
+[1;31m
+Start test 3[0m
+[1;31m
+Start test 4[0m
+[1;31m
+Start test 5[0m
+[1;31m
+Start test 6[0m
+[1;31m
+Start test 7[0m
+[1;31m
+Start test 8[0m
+[1;31m
+Start test 9[0m
+[1;31m
+Start test 10[0m
+[1;31m
+Start test 11[0m
+[1;31m
+Start test 12[0m
+Ó2022-01-14 14:28:27.881  WARN 21632 --- [io-28852-exec-3] .w.s.m.s.DefaultHandlerExceptionResolver : Resolved [org.springframework.web.HttpRequestMethodNotSupportedException: Request method 'GET' not supported]
+Ó2022-01-14 14:28:27.914  WARN 21632 --- [io-28852-exec-4] .w.s.m.s.DefaultHandlerExceptionResolver : Resolved [org.springframework.web.HttpRequestMethodNotSupportedException: Request method 'PUT' not supported]
+Ö2022-01-14 14:28:27.926  WARN 21632 --- [io-28852-exec-5] .w.s.m.s.DefaultHandlerExceptionResolver : Resolved [org.springframework.web.HttpRequestMethodNotSupportedException: Request method 'DELETE' not supported]
+[1;31m
+Start test 13[0m
