@@ -35,5 +35,7 @@ account/employee/EmployeeService.java
  account.employee.EmployeeService
 account/security/userdetails/repository/Role.java
  account.security.userdetails.repository.Role
+account/security/RestAuthenticationEntryPoint.java
+ account.security.RestAuthenticationEntryPoint
 account/security/CustomSecurityConfig.java
  account.security.CustomSecurityConfig

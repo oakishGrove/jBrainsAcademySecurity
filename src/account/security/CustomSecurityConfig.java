@@ -17,7 +17,12 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.AuthenticationEntryPoint;
 
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.nio.file.attribute.UserPrincipal;
 
 @EnableWebSecurity
@@ -53,9 +58,11 @@ public class CustomSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity httpSecurity) throws Exception {
-
         httpSecurity
             .httpBasic()
+                // copy of unnused material
+                .authenticationEntryPoint(restAuthenticationEntryPoint()) // Handle auth error
+
             .and()
                 .authorizeRequests()
                 .mvcMatchers(HttpMethod.POST, "api/auth/signup").permitAll()
@@ -65,8 +72,9 @@ public class CustomSecurityConfig extends WebSecurityConfigurerAdapter {
                 .sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 
-        httpSecurity.
-                csrf().disable().headers().frameOptions().disable();
+        httpSecurity
+                .csrf().disable().headers().frameOptions().disable();
+
 
 //        http.authorizeRequests()
 //                .mvcMatchers("/admin").hasRole("ADMIN")
@@ -88,4 +96,9 @@ public class CustomSecurityConfig extends WebSecurityConfigurerAdapter {
 //        authenticationProvider.setUserDetailsService(userDetailsService);
 //        return authenticationProvider;
 //    }
+
+    @Bean
+    public RestAuthenticationEntryPoint restAuthenticationEntryPoint() {
+        return new RestAuthenticationEntryPoint();
+    }
 }
