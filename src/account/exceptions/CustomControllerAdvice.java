@@ -33,8 +33,13 @@ public class CustomControllerAdvice extends ExceptionHandlerExceptionResolver {
         return handleException(ex, HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler(RuntimeException.class)
-    ResponseEntity<ErrorDto> handleSignUpException(RuntimeException ex) {
-        return handleException(ex, HttpStatus.BAD_REQUEST);
+    @ExceptionHandler(AuthenticationUserDoesntExist.class)
+    ResponseEntity<ErrorDto> handleAuthenticationUserDoesntExistException(SignUpValidationException ex) {
+        return handleException(ex, HttpStatus.FORBIDDEN);
     }
+
+//    @ExceptionHandler(RuntimeException.class)
+//    ResponseEntity<ErrorDto> handleSignUpException(RuntimeException ex) {
+//        return handleException(ex, HttpStatus.BAD_REQUEST);
+//    }
 }
