@@ -1,21 +1,3 @@
-account/dtos/SignUpDto.java
- account.dtos.SignUpDto
-account/dtos/ErrorDto.java
- account.dtos.ErrorDto
- account.dtos.ErrorDto$ErrorDtoBuilder
-account/exceptions/AuthenticationUserDoesntExist.java
- account.exceptions.AuthenticationUserDoesntExist
-account/exceptions/CustomControllerAdvice.java
- account.exceptions.CustomControllerAdvice
-account/AccountServiceApplication.java
- account.AccountServiceApplication
-account/dtos/UserDto.java
- account.dtos.UserDto
- account.dtos.UserDto$UserDtoBuilder
-account/exceptions/SignUpValidationException.java
- account.exceptions.SignUpValidationException
-account/exceptions/UserAlreadyExistException.java
- account.exceptions.UserAlreadyExistException
 account/security/userdetails/UserDetailsServiceImpl.java
  account.security.userdetails.UserDetailsServiceImpl
  account.security.userdetails.UserDetailsServiceImpl$1
@@ -23,19 +5,40 @@ account/security/userdetails/repository/UserDetailsRepository.java
  account.security.userdetails.repository.UserDetailsRepository
 account/security/userdetails/repository/UserDetails.java
  account.security.userdetails.repository.UserDetails
-account/security/authentication/AuthenticationController.java
- account.security.authentication.AuthenticationController
+account/exceptionsmanagament/exceptions/AuthenticationUserDoesntExist.java
+ account.exceptionsmanagament.exceptions.AuthenticationUserDoesntExist
+account/dtos/SignUpDto.java
+ account.dtos.SignUpDto
+account/dtos/ErrorDto.java
+ account.dtos.ErrorDto
+ account.dtos.ErrorDto$ErrorDtoBuilder
 account/security/userdetails/UserMapper.java
  account.security.userdetails.UserMapper
-account/employee/EmployeeController.java
- account.employee.EmployeeController
-account/security/authentication/AuthenticationService.java
- account.security.authentication.AuthenticationService
-account/employee/EmployeeService.java
- account.employee.EmployeeService
-account/security/userdetails/repository/Role.java
- account.security.userdetails.repository.Role
-account/security/RestAuthenticationEntryPoint.java
- account.security.RestAuthenticationEntryPoint
+account/exceptionsmanagament/exceptions/SignUpValidationException.java
+ account.exceptionsmanagament.exceptions.SignUpValidationException
+account/AccountServiceApplication.java
+ account.AccountServiceApplication
+account/dtos/ChangePasswordResponseDto.java
+ account.dtos.ChangePasswordResponseDto
+ account.dtos.ChangePasswordResponseDto$ChangePasswordResponseDtoBuilder
 account/security/CustomSecurityConfig.java
  account.security.CustomSecurityConfig
+account/dtos/UserDto.java
+ account.dtos.UserDto
+ account.dtos.UserDto$UserDtoBuilder
+account/exceptionsmanagament/exceptions/UserAlreadyExistException.java
+ account.exceptionsmanagament.exceptions.UserAlreadyExistException
+account/security/userdetails/repository/Role.java
+ account.security.userdetails.repository.Role
+account/employee/EmployeeController.java
+ account.employee.EmployeeController
+account/dtos/ChangePasswordDto.java
+ account.dtos.ChangePasswordDto
+account/employee/EmployeeService.java
+ account.employee.EmployeeService
+account/exceptionsmanagament/CustomControllerAdvice.java
+ account.exceptionsmanagament.CustomControllerAdvice
+account/security/authentication/AuthenticationController.java
+ account.security.authentication.AuthenticationController
+account/security/authentication/AuthenticationService.java
+ account.security.authentication.AuthenticationService

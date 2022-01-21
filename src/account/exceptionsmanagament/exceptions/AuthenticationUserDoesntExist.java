@@ -1,4 +1,4 @@
-package account.exceptions;
+package account.exceptionsmanagament.exceptions;
 
 public class AuthenticationUserDoesntExist extends RuntimeException {
 

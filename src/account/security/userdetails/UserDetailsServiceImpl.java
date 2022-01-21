@@ -1,6 +1,6 @@
 package account.security.userdetails;
 
-import account.exceptions.AuthenticationUserDoesntExist;
+import account.exceptionsmanagament.exceptions.AuthenticationUserDoesntExist;
 import account.security.userdetails.repository.UserDetailsRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
