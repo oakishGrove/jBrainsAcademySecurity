@@ -13,14 +13,14 @@ import javax.validation.Valid;
 import java.nio.file.attribute.UserPrincipal;
 
 @RestController
-@RequestMapping("api/auth")
+@RequestMapping("/api/auth")
 @AllArgsConstructor
 public class AuthenticationController {
     
     private final AuthenticationService accountsService;
 
     @PostMapping("/signup")
-    public UserDto singUp(@RequestBody SignUpDto signUpDto) {
+    public UserDto singUp(@Valid @RequestBody SignUpDto signUpDto) {
         return accountsService.signUp(signUpDto);
     }
 

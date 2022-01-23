@@ -6,8 +6,8 @@ import account.dtos.SignUpDto;
 import account.dtos.UserDto;
 import account.exceptionsmanagament.exceptions.SignUpValidationException;
 import account.exceptionsmanagament.exceptions.UserAlreadyExistException;
-import account.security.userdetails.repository.UserDetails;
-import account.security.userdetails.repository.UserDetailsRepository;
+import account.userdetails.repository.UserDetailsEntity;
+import account.userdetails.repository.UserDetailsRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -40,7 +40,7 @@ public class AuthenticationService {
             throw new UserAlreadyExistException("User exist!");
         }
 
-        var userEntity = new UserDetails();
+        var userEntity = new UserDetailsEntity();
         userEntity.setName(dto.getName());
         userEntity.setLastname(dto.getLastname());
         userEntity.setEmail(new String(dto.getEmail().toLowerCase(Locale.ROOT)));
