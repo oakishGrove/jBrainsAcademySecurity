@@ -6,16 +6,22 @@ import account.dtos.SignUpDto;
 import account.dtos.UserDto;
 import account.exceptionsmanagament.exceptions.SignUpValidationException;
 import account.exceptionsmanagament.exceptions.UserAlreadyExistException;
+import account.userdetails.repository.Role;
+import account.userdetails.repository.RoleRepository;
 import account.userdetails.repository.UserDetailsEntity;
 import account.userdetails.repository.UserDetailsRepository;
 import lombok.AllArgsConstructor;
+import org.h2.pagestore.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -23,6 +29,7 @@ public class AuthenticationService {
 
     private final PasswordEncoder passwordEncoder;
     private final UserDetailsRepository repository;
+    private final RoleRepository roleRepository;
     private static List<String> breachedPasswords = List.of("PasswordForJanuary", "PasswordForFebruary", "PasswordForMarch",
             "PasswordForApril", "PasswordForMay", "PasswordForJune", "PasswordForJuly", "PasswordForAugust",
             "PasswordForSeptember", "PasswordForOctober", "PasswordForNovember", "PasswordForDecember");
@@ -40,20 +47,30 @@ public class AuthenticationService {
             throw new UserAlreadyExistException("User exist!");
         }
 
-        var userEntity = new UserDetailsEntity();
-        userEntity.setName(dto.getName());
-        userEntity.setLastname(dto.getLastname());
-        userEntity.setEmail(new String(dto.getEmail().toLowerCase(Locale.ROOT)));
-        userEntity.setPassword(passwordEncoder.encode(dto.getPassword()));
+        var userEntity = UserDetailsEntity.createInstance(
+                new String(dto.getEmail()).toLowerCase(Locale.ROOT),
+                dto.getName(),
+                dto.getLastname(),
+                passwordEncoder.encode(dto.getPassword()));
+        var savedUserEntity = repository.save(userEntity);
 
-        var savedEntity = repository.save(userEntity);
+        String role = "ROLE_USER";
+        if (repository.findAll(
+                PageRequest.of(0, 1))
+                .getTotalElements() == 1) {
+            role = "ROLE_ADMINISTRATOR";
+        }
 
-        return UserDto.builder()
-                .email(dto.getEmail())
-                .lastname(dto.getLastname())
-                .name(dto.getName())
-                .id(savedEntity.getId())
-                .build();
+        roleRepository.save(
+                Role.buildInstance(role, savedUserEntity));
+
+            return UserDto.builder()
+                    .email(dto.getEmail())
+                    .lastname(dto.getLastname())
+                    .name(dto.getName())
+                    .id(savedUserEntity.getId())
+                    .roles(List.of(role))
+                    .build();
     }
 
     private boolean validateSignUp(SignUpDto signUpDto) {

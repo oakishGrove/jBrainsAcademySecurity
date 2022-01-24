@@ -12,6 +12,15 @@ public class Role implements GrantedAuthority {
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
     private String authority;
-//    @ManyToOne
-//    private UserDetails userDetails;
+    @ManyToOne
+//    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false, updatable = false)
+    private UserDetailsEntity userDetailsEntity;
+
+    public static Role buildInstance(String authority, UserDetailsEntity user) {
+        var role = new Role();
+        role.setUserDetailsEntity(user);
+        role.setAuthority(authority);
+        return role;
+    }
 }

@@ -1,13 +1,13 @@
-package account.dtos;
+package account.admin.dtos;
 
 import lombok.Builder;
 import lombok.Data;
 
 import java.util.List;
 
-@Data
 @Builder
-public class UserDto {
+@Data
+public class UserInfoDto {
     private Long id;
     private String name;
     private String lastname;

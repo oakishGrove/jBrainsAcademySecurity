@@ -17,6 +17,10 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.AuthenticationEntryPoint;
+import org.springframework.security.web.access.AccessDeniedHandler;
+import org.springframework.security.web.servlet.util.matcher.MvcRequestMatcher;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 import java.nio.file.attribute.UserPrincipal;
 
@@ -25,6 +29,7 @@ import java.nio.file.attribute.UserPrincipal;
 public class CustomSecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final UserDetailsService userDetailsService;
+//    private final AuthenticationEntryPoint authenticationEntryPoint;
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
@@ -56,16 +61,20 @@ public class CustomSecurityConfig extends WebSecurityConfigurerAdapter {
 
         httpSecurity
             .httpBasic()
+//                .authenticationEntryPoint(authenticationEntryPoint)
             .and()
                 .authorizeRequests()
+                .mvcMatchers("api/admin/user/**").hasRole("ADMINISTRATOR")
                 .mvcMatchers(HttpMethod.POST, "api/auth/signup").permitAll()
                 .mvcMatchers(HttpMethod.POST, "actuator/shutdown").permitAll()
-                .mvcMatchers(HttpMethod.PUT, "api/acct/payments").permitAll()
-                .mvcMatchers(HttpMethod.POST, "api/acct/payments").permitAll()
                 .anyRequest().authenticated()
             .and()
                 .sessionManagement()
-                .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+            .and()
+                .exceptionHandling()
+                .defaultAccessDeniedHandlerFor(customAccessDeniendHandler(), new AntPathRequestMatcher("/**"));
+//                .accessDeniedHandler(customAccessDeniendHandler());
 
         httpSecurity.
                 csrf().disable().headers().frameOptions().disable();
@@ -83,6 +92,10 @@ public class CustomSecurityConfig extends WebSecurityConfigurerAdapter {
         return new BCryptPasswordEncoder(13);
     }
 
+    @Bean
+    public AccessDeniedHandler customAccessDeniendHandler () {
+        return new CustomForbiddenExceptionHandler();
+    }
 //    @Bean
 //    public AuthenticationProvider authenticationProvider() {
 //        var authenticationProvider = new DaoAuthenticationProvider();

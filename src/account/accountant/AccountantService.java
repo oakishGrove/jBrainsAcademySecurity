@@ -15,6 +15,7 @@ public class AccountantService {
     private final AccountantDao accountantDao;
 
     public StatusStringDto uploadPayrolls(List<PayRollDto> paymentDtoList) {
+        System.out.println("TRYING TO UPLOAD THESE PAYROLSS: " + paymentDtoList );
         accountantDao.uploadPayrolls(paymentDtoList);
         return new StatusStringDto("Added successfully!");
     }

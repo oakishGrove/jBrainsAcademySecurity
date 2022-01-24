@@ -3,6 +3,8 @@ package account.userdetails.repository;
 import lombok.Data;
 
 import javax.persistence.*;
+import java.util.List;
+import java.util.Locale;
 
 @Data
 @Entity
@@ -16,6 +18,15 @@ public class UserDetailsEntity {
     private String name;
     private String lastname;
     private String password;
-//    @OneToMany
-//    private List<Role> roles;
+    @OneToMany(cascade = CascadeType.REMOVE)
+    private List<Role> roles;
+
+    public static UserDetailsEntity createInstance(String email, String name, String lastname, String encodedPassword) {
+        var userEntity = new UserDetailsEntity();
+        userEntity.setEmail(email);
+        userEntity.setName(name);
+        userEntity.setLastname(lastname);
+        userEntity.setPassword(encodedPassword);
+        return userEntity;
+    }
 }

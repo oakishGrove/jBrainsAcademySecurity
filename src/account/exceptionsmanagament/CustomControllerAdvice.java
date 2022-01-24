@@ -3,10 +3,9 @@ package account.exceptionsmanagament;
 import account.dtos.ErrorDto;
 import account.exceptionsmanagament.exceptions.AuthenticationUserDoesntExist;
 import account.exceptionsmanagament.exceptions.SignUpValidationException;
-import org.springframework.http.HttpRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.http.server.ServletServerHttpRequest;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -21,6 +20,7 @@ import java.util.Date;
 public class CustomControllerAdvice extends ExceptionHandlerExceptionResolver {
 
     ResponseEntity<ErrorDto> handleException(RuntimeException ex, HttpStatus status, String path) {
+        ex.printStackTrace();
         return ResponseEntity
                 .status(status.value())
                 .body(
@@ -51,7 +51,7 @@ public class CustomControllerAdvice extends ExceptionHandlerExceptionResolver {
         for (var fieldError : bindingResult.getFieldErrors()) {
 //            System.out.println(fieldError.getDefaultMessage());
             msg += fieldError.getDefaultMessage();
-            System.out.println(msg);
+            System.out.println(request.getServletPath() + " " + msg + "\n  ");
         }
 
         return ResponseEntity
@@ -64,9 +64,23 @@ public class CustomControllerAdvice extends ExceptionHandlerExceptionResolver {
                         .path(request.getServletPath())
                         .build());
     }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    ResponseEntity<ErrorDto> handleAccessDeniendException(AccessDeniedException ex, HttpServletRequest request) {
+        return ResponseEntity
+                .status(HttpStatus.FORBIDDEN.value())
+                .body(ErrorDto.builder()
+                        .status(HttpStatus.FORBIDDEN.value())
+                        .error(HttpStatus.FORBIDDEN.getReasonPhrase())
+                        .timestamp(new Date())
+                        .path(request.getServletPath())
+                        .message("Access Denied!")
+                        .build());
+    }
+
     @ExceptionHandler(RuntimeException.class)
     ResponseEntity<ErrorDto> handleRuntimeExceptions(RuntimeException ex, HttpServletRequest request) {
-        ex.printStackTrace();
+        System.out.println("DEFAULT RUNTIME EXCEPTION HANDLER CALLED + " + ex);
         return handleException(ex, HttpStatus.BAD_REQUEST, request.getServletPath());
     }
 

@@ -1,7 +1,10 @@
 package account.userdetails;
 
 import account.dtos.UserDto;
+import account.userdetails.repository.Role;
 import account.userdetails.repository.UserDetailsEntity;
+
+import java.util.stream.Collectors;
 
 public class UserMapper {
     public static UserDto mapToUserDto(UserDetailsEntity user) {
@@ -10,6 +13,9 @@ public class UserMapper {
                 .email(user.getEmail())
                 .name(user.getName())
                 .lastname(user.getLastname())
+                .roles(user.getRoles().stream()
+                        .map(Role::getAuthority)
+                        .collect(Collectors.toList()))
                 .build();
     }
 

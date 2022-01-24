@@ -17,6 +17,7 @@ public class PayRollEntity {
     private Long id;
     private Long salary;
     private LocalDate period;
+//    @ManyToOne
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "employee_id", nullable = false, updatable = false)
     private UserDetailsEntity employee;
