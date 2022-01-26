@@ -22,7 +22,7 @@ public class JDBCBareBonesAccountantImpl implements AccountantDao {
 
     private static final String AddPaymentSQL = "INSERT INTO payroll (id, salary, period, employee_id )" +
             " VALUES (payroll_sq.nextval, ?,?,?);";
-    private static final String findEmployeeSQL = "SELECT id, email FROM user_details AS u WHERE u.email = ?;";
+    private static final String findEmployeeSQL = "SELECT id, email FROM users AS u WHERE u.email = ?;";
     private static final String uniquePeriodSQL = "SELECT id FROM payroll AS pe WHERE pe.period = ? AND pe.employee_id = ? LIMIT 1;";
     private static final String fetchPayrollByUserIdAndPeriod = "SELECT * FROM payroll AS p WHERE p.employee_id = ? AND p.period = ?";
     private static final String selectAllPayrolls = "SELECT * FROM payroll WHERE payroll.employee_id = ?";
@@ -39,6 +39,8 @@ public class JDBCBareBonesAccountantImpl implements AccountantDao {
 
             connection.commit();
         } catch (Exception exception) {
+            exception.printStackTrace();
+            System.out.println(exception);
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Failed to update salaries");
         }
     }
@@ -153,6 +155,8 @@ public class JDBCBareBonesAccountantImpl implements AccountantDao {
             resultSet.close();
             return hasNext;
         } catch (SQLException exception) {
+            System.out.println(exception);
+            exception.printStackTrace();
             rollback(connection, "SQL Error while requesting unique period");
         }
         return false;

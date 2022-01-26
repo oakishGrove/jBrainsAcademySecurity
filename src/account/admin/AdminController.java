@@ -19,15 +19,10 @@ public class AdminController {
 
     @PutMapping("/role")
     public UserInfoDto roleOperations(@RequestBody(required = false) ChangeRoleDto changeRoleDto) {
-        try {
-            switch (changeRoleDto.getOperation()) {
-                case "GRANT":  return adminService.grantRole(changeRoleDto.getUser(), "ROLE_" + changeRoleDto.getRole());
-                case "REMOVE": return adminService.removeRole(changeRoleDto.getUser(), "ROLE_" + changeRoleDto.getRole());
-                default:       throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid operation specified");
-            }
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            throw ex;
+        switch (changeRoleDto.getOperation()) {
+            case "GRANT":  return adminService.grantRole(changeRoleDto.getUser(), changeRoleDto.getRole());
+            case "REMOVE": return adminService.removeRole(changeRoleDto.getUser(), changeRoleDto.getRole());
+            default:       throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid operation specified");
         }
 //        return switch (changeRoleDto.getRole()) {
 //            case "GRANT" -> adminService.grantRole(changeRoleDto.getUser(), changeRoleDto.getRole());

@@ -1,6 +1,6 @@
 package account.accountant.dao;
 
-import account.userdetails.repository.UserDetailsEntity;
+import account.security.userdetails.repository.UserDetailsEntity;
 import lombok.Data;
 
 import javax.persistence.*;

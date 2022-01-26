@@ -2,7 +2,7 @@ package account.employee;
 
 import account.accountant.dao.AccountantDao;
 import account.dtos.PayRollResponseDto;
-import account.userdetails.repository.UserDetailsRepository;
+import account.security.userdetails.repository.UserDetailsRepository;
 import account.utils.DateConverterUtil;
 import lombok.AllArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -43,7 +43,6 @@ public class EmployeeService {
                     userDetailsEntity.getId(),
                     period);
 
-            System.out.println("" + payRollEntity);
             return PayRollResponseDto.builder()
                         .name(userDetailsEntity.getName())
                         .lastname(userDetailsEntity.getLastname())

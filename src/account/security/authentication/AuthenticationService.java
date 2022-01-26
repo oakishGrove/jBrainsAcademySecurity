@@ -6,22 +6,16 @@ import account.dtos.SignUpDto;
 import account.dtos.UserDto;
 import account.exceptionsmanagament.exceptions.SignUpValidationException;
 import account.exceptionsmanagament.exceptions.UserAlreadyExistException;
-import account.userdetails.repository.Role;
-import account.userdetails.repository.RoleRepository;
-import account.userdetails.repository.UserDetailsEntity;
-import account.userdetails.repository.UserDetailsRepository;
+import account.security.userdetails.repository.*;
 import lombok.AllArgsConstructor;
-import org.h2.pagestore.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -52,25 +46,27 @@ public class AuthenticationService {
                 dto.getName(),
                 dto.getLastname(),
                 passwordEncoder.encode(dto.getPassword()));
-        var savedUserEntity = repository.save(userEntity);
+//        var savedUserEntity = repository.save(userEntity);
 
-        String role = "ROLE_USER";
+        var roleEnum = RoleEnum.USER;
         if (repository.findAll(
                 PageRequest.of(0, 1))
-                .getTotalElements() == 1) {
-            role = "ROLE_ADMINISTRATOR";
+                .getTotalElements() == 0) {
+            roleEnum = RoleEnum.ADMINISTRATOR;
         }
 
-        roleRepository.save(
-                Role.buildInstance(role, savedUserEntity));
+        var role = roleRepository.findByRole(roleEnum);
+        userEntity.setRoles(List.of(role));
 
-            return UserDto.builder()
-                    .email(dto.getEmail())
-                    .lastname(dto.getLastname())
-                    .name(dto.getName())
-                    .id(savedUserEntity.getId())
-                    .roles(List.of(role))
-                    .build();
+        var savedUserEntity = repository.save(userEntity);
+
+        return UserDto.builder()
+                .email(dto.getEmail())
+                .lastname(dto.getLastname())
+                .name(dto.getName())
+                .id(savedUserEntity.getId())
+                .roles(List.of(role.getAuthority()))
+                .build();
     }
 
     private boolean validateSignUp(SignUpDto signUpDto) {

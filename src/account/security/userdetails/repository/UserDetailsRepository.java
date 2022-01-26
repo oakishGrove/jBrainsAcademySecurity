@@ -1,4 +1,4 @@
-package account.userdetails.repository;
+package account.security.userdetails.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;

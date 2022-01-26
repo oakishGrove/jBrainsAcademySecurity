@@ -1,8 +1,9 @@
-package account.userdetails;
+package account.security.userdetails;
 
 import account.dtos.UserDto;
-import account.userdetails.repository.Role;
-import account.userdetails.repository.UserDetailsEntity;
+import account.security.userdetails.repository.Role;
+import account.security.userdetails.repository.UserDetailsEntity;
+import org.springframework.context.annotation.Profile;
 
 import java.util.stream.Collectors;
 
