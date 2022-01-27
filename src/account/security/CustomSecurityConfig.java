@@ -1,5 +1,6 @@
 package account.security;
 
+import account.security.userdetails.repository.RoleEnum;
 import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpMethod;
@@ -64,7 +65,13 @@ public class CustomSecurityConfig extends WebSecurityConfigurerAdapter {
 //                .authenticationEntryPoint(authenticationEntryPoint)
             .and()
                 .authorizeRequests()
-                .mvcMatchers("api/admin/user/**").hasRole("ADMINISTRATOR")
+                .mvcMatchers("api/admin/user/**").hasRole(RoleEnum.ADMINISTRATOR.name())
+                .mvcMatchers("api/security/events").hasRole(RoleEnum.AUDITOR.name())
+                .mvcMatchers(HttpMethod.POST, "api/auth/changepass")
+                    .hasAnyRole(
+                            RoleEnum.ADMINISTRATOR.name(),
+                            RoleEnum.ACCOUNTANT.name(),
+                            RoleEnum.USER.name())
                 .mvcMatchers(HttpMethod.POST, "api/auth/signup").permitAll()
                 .mvcMatchers(HttpMethod.POST, "actuator/shutdown").permitAll()
                 .anyRequest().authenticated()

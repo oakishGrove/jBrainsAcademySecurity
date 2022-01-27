@@ -1,5 +1,6 @@
 package account.employee;
 
+import account.security.userdetails.repository.RoleEnum;
 import lombok.AllArgsConstructor;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;

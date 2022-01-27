@@ -1,5 +1,6 @@
 package account.admin;
 
+import account.admin.dtos.ChangeAccessDto;
 import account.admin.dtos.UserInfoDto;
 import account.security.userdetails.UserEntityService;
 import account.security.userdetails.repository.Role;
@@ -59,7 +60,7 @@ public class AdminService {
 
     private boolean isViolatedRolesConstraints(Role role, List<Role> userRoles) {
         List<RoleEnum> administriveRoles = List.of(RoleEnum.ADMINISTRATOR);
-        List<RoleEnum> businessRoles = List.of(RoleEnum.ACCOUNTANT, RoleEnum.USER);
+        List<RoleEnum> businessRoles = List.of(RoleEnum.ACCOUNTANT, RoleEnum.USER, RoleEnum.AUDITOR);
 
         if (administriveRoles.contains(role.getRole())) {
             for (var userRole : userRoles) {
@@ -167,5 +168,24 @@ public class AdminService {
             return roleObj;
         } catch (Exception ex) { }
         throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Role not found!");
+    }
+
+    public void changeUserAccess(ChangeAccessDto changeAccessDto) {
+        var user = userEntityService
+                .findUserDetailsEntityByEmail(changeAccessDto.getUser())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "This user doesnt exist"));
+
+        if (user.getRoles().contains(RoleEnum.ADMINISTRATOR)) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "Can't lock the ADMINISTRATOR");
+        }
+
+        switch (changeAccessDto.getOperation()) {
+            case "LOCK": user.setLocked(true); break;
+            case "UNLOCK" : user.setLocked(false); break;
+            default: throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Undefined operation specified");
+        }
+        userEntityService.updateUserDetailsEntity(user);
     }
 }

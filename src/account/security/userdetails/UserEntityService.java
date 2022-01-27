@@ -55,11 +55,6 @@ public class UserEntityService implements UserDetailsService {
             @Override
             public Collection<? extends GrantedAuthority> getAuthorities() {
                 return rolesList;
-//                return user.getRoles();
-//                        user.getRoles();
-//                        .getRoles().stream()
-//                        .map((role) -> (GrantedAuthority)() -> role);
-//                return new ArrayList<GrantedAuthority>();
             }
 
             @Override

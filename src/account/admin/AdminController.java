@@ -1,8 +1,10 @@
 package account.admin;
 
+import account.admin.dtos.ChangeAccessDto;
 import account.admin.dtos.ChangeRoleDto;
 import account.admin.dtos.DeleteUserResponseDto;
 import account.admin.dtos.UserInfoDto;
+import account.dtos.StatusStringDto;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -43,5 +45,16 @@ public class AdminController {
         }
         adminService.removeUser(email);
         return new DeleteUserResponseDto(email, "Deleted successfully!");
+    }
+
+    @PutMapping("/access")
+    public StatusStringDto changeUserAccess(@RequestBody ChangeAccessDto changeAccessDto) {
+        adminService.changeUserAccess(changeAccessDto);
+        return new StatusStringDto(String.format("User %s %s!",
+                changeAccessDto.getUser(),
+                changeAccessDto.getOperation().equals("LOCK") ?
+                        "locked" :
+                        "unlocked"
+                ));
     }
 }
