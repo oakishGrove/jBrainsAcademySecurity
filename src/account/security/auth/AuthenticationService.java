@@ -6,12 +6,14 @@ import account.dtos.SignUpDto;
 import account.dtos.UserDto;
 import account.exceptionsmanagament.exceptions.SignUpValidationException;
 import account.exceptionsmanagament.exceptions.UserAlreadyExistException;
+import account.security.securityevents.SecurityEventsService;
 import account.security.userdetails.repository.*;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
@@ -24,10 +26,12 @@ public class AuthenticationService {
     private final PasswordEncoder passwordEncoder;
     private final UserDetailsRepository repository;
     private final RoleRepository roleRepository;
+    private final SecurityEventsService securityEventsService;
     private static List<String> breachedPasswords = List.of("PasswordForJanuary", "PasswordForFebruary", "PasswordForMarch",
             "PasswordForApril", "PasswordForMay", "PasswordForJune", "PasswordForJuly", "PasswordForAugust",
             "PasswordForSeptember", "PasswordForOctober", "PasswordForNovember", "PasswordForDecember");
 
+    @Transactional
     public UserDto signUp(SignUpDto dto) {
 
         System.out.println("\n\nREGISTERING DTO: " + dto);
@@ -104,7 +108,9 @@ public class AuthenticationService {
         changedUser
                 .setPassword(passwordEncoder.encode(dto.getNew_password()));
 
-        repository.save(changedUser);
+        var updatedUser = repository.save(changedUser);
+
+        securityEventsService.createEventChangePassword(updatedUser.getEmail());
 
         return ChangePasswordResponseDto.builder()
                 .email(userDetails.getUsername())

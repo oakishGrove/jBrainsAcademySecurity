@@ -21,6 +21,7 @@ public class UserDetailsEntity implements Serializable {
     private String lastname;
     private String password;
     private Boolean locked;
+    private Integer failedAttempts;
     @ManyToMany(fetch = FetchType.EAGER)
 //    @ManyToMany(cascade = {CascadeType.REMOVE, CascadeType.PERSIST}, fetch = FetchType.EAGER)
     @JoinTable(
@@ -49,6 +50,7 @@ public class UserDetailsEntity implements Serializable {
         userEntity.setLastname(lastname);
         userEntity.setPassword(encodedPassword);
         userEntity.setLocked(false);
+        userEntity.setFailedAttempts(0);
         return userEntity;
     }
 }

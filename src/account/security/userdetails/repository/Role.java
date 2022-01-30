@@ -38,4 +38,17 @@ public class Role implements GrantedAuthority {
     public boolean equals(RoleEnum o) {
         return this.role.equals(o);
     }
+
+    @Override
+    public String toString() {
+        return "Role{" +
+                "id=" + id +
+                ", role=" + role +
+                '}';
+    }
+
+    @Override
+    public int hashCode() {
+        return 31 * id.hashCode() + 31 * role.hashCode();
+    }
 }

@@ -1,35 +1,34 @@
 package account.security;
 
+//import account.security.failedlogin.CustomForbiddenExceptionHandler;
+import account.security.failedlogin.CustomForbiddenExceptionHandler;
+import account.security.failedlogin.LogingErrorLoggerConfigurer;
+import account.security.failedlogin.RestAuthenticationEntryPoint;
+import account.security.securityevents.SecurityEventsService;
 import account.security.userdetails.repository.RoleEnum;
 import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpMethod;
-import org.springframework.security.authentication.AuthenticationProvider;
-import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.access.AccessDeniedHandler;
-import org.springframework.security.web.servlet.util.matcher.MvcRequestMatcher;
+import org.springframework.security.web.access.ExceptionTranslationFilter;
+import org.springframework.security.web.authentication.www.BasicAuthenticationConverter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
-
-import java.nio.file.attribute.UserPrincipal;
 
 @EnableWebSecurity
 @AllArgsConstructor
 public class CustomSecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final UserDetailsService userDetailsService;
+    private final SecurityEventsService securityEventsService;
 //    private final AuthenticationEntryPoint authenticationEntryPoint;
 
     @Override
@@ -61,8 +60,12 @@ public class CustomSecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity httpSecurity) throws Exception {
 
         httpSecurity
+//            .addFilterAfter(customExceptionTranslationFilter(), ExceptionTranslationFilter.class)
+//            .addFilterBefore(customFilterSecurityInterceptor(), FilterSecurityInterceptor.class)
+
             .httpBasic()
 //                .authenticationEntryPoint(authenticationEntryPoint)
+                .authenticationEntryPoint(authenticationEntryPoint())
             .and()
                 .authorizeRequests()
                 .mvcMatchers("api/admin/user/**").hasRole(RoleEnum.ADMINISTRATOR.name())
@@ -80,7 +83,11 @@ public class CustomSecurityConfig extends WebSecurityConfigurerAdapter {
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
             .and()
                 .exceptionHandling()
-                .defaultAccessDeniedHandlerFor(customAccessDeniendHandler(), new AntPathRequestMatcher("/**"));
+                    .accessDeniedHandler(customAccessDeniendHandler())
+//                    .defaultAccessDeniedHandlerFor(customAccessDeniendHandler(), new AntPathRequestMatcher("**"))
+        ;
+//            .and()
+//                .apply(loginErrorLoggerConfigurer());
 //                .accessDeniedHandler(customAccessDeniendHandler());
 
         httpSecurity.
@@ -94,6 +101,10 @@ public class CustomSecurityConfig extends WebSecurityConfigurerAdapter {
 //                .and().httpBasic();
     }
 
+    public LogingErrorLoggerConfigurer loginErrorLoggerConfigurer() {
+        return new LogingErrorLoggerConfigurer();
+    }
+
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder(13);
@@ -101,8 +112,25 @@ public class CustomSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Bean
     public AccessDeniedHandler customAccessDeniendHandler () {
-        return new CustomForbiddenExceptionHandler();
+        return new CustomForbiddenExceptionHandler(securityEventsService);
     }
+
+    @Bean
+    public AuthenticationEntryPoint authenticationEntryPoint() {
+        return new RestAuthenticationEntryPoint(securityEventsService, basicAuthenticationConverter());
+    }
+
+    @Bean
+    public CustomExceptionTranslationFilter customExceptionTranslationFilter() {
+//        return new CustomExceptionTranslationFilter(authenticationEntryPoint, securityEventsService);
+        return new CustomExceptionTranslationFilter(authenticationEntryPoint(), securityEventsService);
+    }
+
+//    @Bean
+//    public FilterSecurityInterceptor customFilterSecurityInterceptor() {
+//        return new CustomFilterSecurityInterceptor();
+//    }
+
 //    @Bean
 //    public AuthenticationProvider authenticationProvider() {
 //        var authenticationProvider = new DaoAuthenticationProvider();
@@ -110,4 +138,9 @@ public class CustomSecurityConfig extends WebSecurityConfigurerAdapter {
 //        authenticationProvider.setUserDetailsService(userDetailsService);
 //        return authenticationProvider;
 //    }
+
+    @Bean
+    public BasicAuthenticationConverter basicAuthenticationConverter() {
+        return new BasicAuthenticationConverter();
+    }
 }

@@ -22,7 +22,6 @@ public class EmployeeService {
     public Object getUserPayroll(UserDetails userDetails, String periodString) {
 
         var userDetailsEntity = repository.findByEmail(userDetails.getUsername()).get();
-        System.out.println("" + userDetailsEntity);
 
         LocalDate period = DateConverterUtil.fromString(periodString);
         if (period == null) {

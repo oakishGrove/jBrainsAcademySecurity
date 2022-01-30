@@ -2,6 +2,7 @@ package account.admin;
 
 import account.admin.dtos.ChangeAccessDto;
 import account.admin.dtos.UserInfoDto;
+import account.security.securityevents.SecurityEventsService;
 import account.security.userdetails.UserEntityService;
 import account.security.userdetails.repository.Role;
 import account.security.userdetails.repository.RoleEnum;
@@ -9,6 +10,7 @@ import account.security.userdetails.repository.RoleRepository;
 import account.security.userdetails.repository.UserDetailsEntity;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
@@ -23,6 +25,7 @@ public class AdminService {
 
     private final UserEntityService userEntityService;
     private final RoleRepository roleRepository;
+    private final SecurityEventsService securityEventsService;
 
     @Transactional
     public UserInfoDto grantRole(String user, String roleString) {
@@ -50,9 +53,10 @@ public class AdminService {
                 HttpStatus.BAD_REQUEST,
                 "This role doesnt exist");
 
-
         userDetails.getRoles().add(dbRole);
         var updatedUser = userEntityService.updateUserDetailsEntity(userDetails);
+
+        securityEventsService.createEventGrantRole(dbRole.getRole(), updatedUser.getEmail());
 
         return mapToUserInfoDto(updatedUser);
     }
@@ -105,8 +109,11 @@ public class AdminService {
                     HttpStatus.BAD_REQUEST,
                     "The user must have at least one role!");
         } else {
-            var updateUserDetails = userEntityService.updateUserDetailsEntity(userDetails);
-            return mapToUserInfoDto(updateUserDetails);
+            var updatedUserDetails = userEntityService.updateUserDetailsEntity(userDetails);
+
+            securityEventsService.createEventRemoveRole(role.getRole(), updatedUserDetails.getEmail());
+
+            return mapToUserInfoDto(updatedUserDetails);
         }
     }
 
@@ -143,6 +150,7 @@ public class AdminService {
         }
 
         userEntityService.removeUser(email);
+        securityEventsService.createEventDeleteUser(email);
     }
 
     private UserInfoDto mapToUserInfoDto(UserDetailsEntity userDetailsEntity) {
@@ -175,17 +183,38 @@ public class AdminService {
                 .findUserDetailsEntityByEmail(changeAccessDto.getUser())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "This user doesnt exist"));
 
-        if (user.getRoles().contains(RoleEnum.ADMINISTRATOR)) {
-            throw new ResponseStatusException(
-                    HttpStatus.BAD_REQUEST,
-                    "Can't lock the ADMINISTRATOR");
+        for (var role : user.getRoles()) {
+            if (role.getRole().equals(RoleEnum.ADMINISTRATOR)) {
+                throw new ResponseStatusException(
+                        HttpStatus.BAD_REQUEST,
+                        "Can't lock the ADMINISTRATOR!");
+            }
         }
+
+//        if (user.getRoles().contains(RoleEnum.ADMINISTRATOR)) {
+//            throw new ResponseStatusException(
+//                    HttpStatus.BAD_REQUEST,
+//                    "Can't lock the ADMINISTRATOR");
+//        }
 
         switch (changeAccessDto.getOperation()) {
             case "LOCK": user.setLocked(true); break;
-            case "UNLOCK" : user.setLocked(false); break;
+            case "UNLOCK" :
+                user.setLocked(false);
+                user.setFailedAttempts(0);
+                break;
             default: throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Undefined operation specified");
         }
-        userEntityService.updateUserDetailsEntity(user);
+        var updatedUser = userEntityService.updateUserDetailsEntity(user);
+
+        switch (changeAccessDto.getOperation()) {
+            case "LOCK":
+                securityEventsService.createEventLockUser(
+                        updatedUser.getEmail(),
+                        SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString());
+                break;
+            case "UNLOCK" :
+                securityEventsService.createEventUnLockUser(updatedUser.getEmail());            break;
+        }
     }
 }

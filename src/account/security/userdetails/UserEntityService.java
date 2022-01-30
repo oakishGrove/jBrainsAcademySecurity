@@ -5,7 +5,12 @@ import account.security.userdetails.repository.Role;
 import account.security.userdetails.repository.UserDetailsEntity;
 import account.security.userdetails.repository.UserDetailsRepository;
 import lombok.AllArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.context.annotation.Primary;
+import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -20,6 +25,7 @@ import java.util.*;
 @AllArgsConstructor
 //public class UserEntityService {
 public class UserEntityService implements UserDetailsService {
+    private static final Logger log = LoggerFactory.getLogger("CustomUserEntityService");
 
     private final UserDetailsRepository userDetailsRepository;
 
@@ -48,7 +54,8 @@ public class UserEntityService implements UserDetailsService {
         var user = userDetailsRepository
                 .findByEmail(new String(username).toLowerCase(Locale.ROOT))
                 .orElseThrow(() -> new AuthenticationUserDoesntExist("Nope"));
-
+        System.out.println("**fetching user for authentication(load by user): " + user.getEmail());
+        log.info("fetching user for authentication(load by user): " + user.getEmail());
         var rolesList = new ArrayList<Role>(user.getRoles());
 
         return new UserDetails() {
@@ -74,7 +81,7 @@ public class UserEntityService implements UserDetailsService {
 
             @Override
             public boolean isAccountNonLocked() {
-                return true;
+                return !user.getLocked();
             }
 
             @Override

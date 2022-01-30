@@ -3,9 +3,13 @@ package account.exceptionsmanagament;
 import account.dtos.ErrorDto;
 import account.exceptionsmanagament.exceptions.AuthenticationUserDoesntExist;
 import account.exceptionsmanagament.exceptions.SignUpValidationException;
+import account.security.securityevents.SecurityEventsService;
+import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -17,7 +21,10 @@ import javax.servlet.http.HttpServletResponse;
 import java.util.Date;
 
 @RestControllerAdvice
+@AllArgsConstructor
 public class CustomControllerAdvice extends ExceptionHandlerExceptionResolver {
+    private final SecurityEventsService securityEventsService;
+
 
     ResponseEntity<ErrorDto> handleException(RuntimeException ex, HttpStatus status, String path) {
         ex.printStackTrace();
@@ -41,7 +48,16 @@ public class CustomControllerAdvice extends ExceptionHandlerExceptionResolver {
 
     @ExceptionHandler(AuthenticationUserDoesntExist.class)
     ResponseEntity<ErrorDto> handleAuthenticationUserDoesntExistException(SignUpValidationException ex, HttpServletRequest request) {
-        return handleException(ex, HttpStatus.FORBIDDEN, request.getServletPath());
+//        return handleException(ex, HttpStatus.UNAUTHORIZED, request.getServletPath());
+        return ResponseEntity
+                .status(HttpStatus.UNAUTHORIZED)
+                .body(ErrorDto.builder()
+                        .error(HttpStatus.UNAUTHORIZED.getReasonPhrase())
+                        .message("Access Denied!")
+                        .status(400)
+                        .timestamp(new Date())
+                        .path(request.getServletPath())
+                        .build());
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -65,8 +81,12 @@ public class CustomControllerAdvice extends ExceptionHandlerExceptionResolver {
                         .build());
     }
 
+
+    // Its catches AccessDeniendException that is throw after security chains finishes
+    // by security aspect @Secured
     @ExceptionHandler(AccessDeniedException.class)
     ResponseEntity<ErrorDto> handleAccessDeniendException(AccessDeniedException ex, HttpServletRequest request) {
+        securityEventsService.createEventAccessDenied(request.getServletPath());
         return ResponseEntity
                 .status(HttpStatus.FORBIDDEN.value())
                 .body(ErrorDto.builder()

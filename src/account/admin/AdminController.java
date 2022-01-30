@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
+import java.util.Locale;
 
 @RestController
 @RequestMapping("/api/admin/user")
@@ -51,7 +52,7 @@ public class AdminController {
     public StatusStringDto changeUserAccess(@RequestBody ChangeAccessDto changeAccessDto) {
         adminService.changeUserAccess(changeAccessDto);
         return new StatusStringDto(String.format("User %s %s!",
-                changeAccessDto.getUser(),
+                changeAccessDto.getUser().toLowerCase(Locale.ROOT),
                 changeAccessDto.getOperation().equals("LOCK") ?
                         "locked" :
                         "unlocked"
